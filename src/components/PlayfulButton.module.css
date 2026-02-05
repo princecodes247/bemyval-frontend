@@ -1,7 +1,7 @@
 .container {
   position: relative;
   width: 100%;
-  height: 100px;
+  height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13,17 +13,19 @@
   padding: 14px 28px;
   font-size: 1rem;
   font-weight: 600;
-  font-family: inherit;
-  color: var(--color-text);
-  background: var(--color-surface);
-  border: 2px solid var(--color-surface-hover);
-  border-radius: var(--radius-lg);
+  font-family: var(--font-primary);
+  color: var(--color-text-soft);
+  background: var(--white);
+  border: 2px solid var(--gray);
+  border-radius: var(--radius-full);
   cursor: pointer;
-  transition: background var(--transition-fast), border-color var(--transition-fast);
+  transition: all var(--transition-fast);
   white-space: nowrap;
+  box-shadow: var(--shadow-soft);
 }
 
 .button:hover {
-  background: var(--color-surface-hover);
-  border-color: var(--color-text-subtle);
+  background: var(--blush);
+  border-color: var(--pink-soft);
+  color: var(--color-text);
 }

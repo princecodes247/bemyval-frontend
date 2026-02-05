@@ -2,9 +2,9 @@
 
 import { useState, useEffect, use } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { YES_MESSAGES, EXPIRED_MESSAGE } from '@bemyval/shared';
-import type { PublicValentinePage } from '@bemyval/shared';
-import { api } from '@/lib/api';
+import { YES_MESSAGES, EXPIRED_MESSAGE } from '../../../lib/constants';
+import type { PublicValentinePage } from '../../../lib/types';
+import { api } from '../../../lib/api';
 import { FloatingHearts } from '@/components/FloatingHearts';
 import { PlayfulButton } from '@/components/PlayfulButton';
 import { Confetti } from '@/components/Confetti';

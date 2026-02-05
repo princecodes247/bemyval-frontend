@@ -9,7 +9,13 @@ import { FloatingHearts } from '@/components/FloatingHearts';
 import styles from './page.module.css';
 import { MESSAGE_PRESETS, OWNERSHIP_WARNING } from '@/lib/constants';
 
-type PresetCategory = keyof typeof MESSAGE_PRESETS;
+type MoodType = 'sweet' | 'funny' | 'bold';
+
+const MOOD_OPTIONS: { value: MoodType; label: string; emoji: string }[] = [
+    { value: 'sweet', label: 'Sweet', emoji: '💕' },
+    { value: 'funny', label: 'Playful', emoji: '😜' },
+    { value: 'bold', label: 'Bold', emoji: '🔥' },
+];
 
 export default function CreatePage() {
     const router = useRouter();
@@ -17,13 +23,18 @@ export default function CreatePage() {
     const [message, setMessage] = useState('');
     const [senderName, setSenderName] = useState('');
     const [anonymous, setAnonymous] = useState(false);
+    const [selectedMood, setSelectedMood] = useState<MoodType | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState<{ id: string; shareUrl: string } | null>(null);
     const [copied, setCopied] = useState(false);
 
-    const handlePresetClick = (text: string) => {
-        setMessage(text);
+    const handleMoodSelect = (mood: MoodType) => {
+        setSelectedMood(mood);
+        const presets = MESSAGE_PRESETS[mood];
+        if (presets && presets.length > 0) {
+            setMessage(presets[0]);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -39,7 +50,6 @@ export default function CreatePage() {
                 senderName: senderName.trim() || undefined,
             });
 
-            // Store the owner key
             storeValentineKey(result.id, result.ownerKey);
 
             setSuccess({
@@ -66,40 +76,52 @@ export default function CreatePage() {
         router.push(`/my/${success.id}`);
     };
 
+    // Success state
     if (success) {
         return (
             <main className={styles.main}>
                 <FloatingHearts />
                 <motion.div
                     className={styles.successCard}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5 }}
+                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{ duration: 0.5, type: 'spring', bounce: 0.4 }}
                 >
-                    <div className={styles.successIcon}>🎉</div>
-                    <h2 className={styles.successTitle}>Your Valentine is Ready!</h2>
+                    <motion.div
+                        className={styles.successIcon}
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ duration: 0.6, repeat: 2 }}
+                    >
+                        🎉
+                    </motion.div>
+                    <h2 className={styles.successTitle}>You&apos;re all set!</h2>
                     <p className={styles.successText}>
-                        Share this link with your special someone:
+                        Share this link with your special someone
                     </p>
 
                     <div className={styles.linkBox}>
-                        <code className={styles.link}>{success.shareUrl}</code>
+                        <input
+                            type="text"
+                            value={success.shareUrl}
+                            readOnly
+                            className={styles.linkInput}
+                        />
                         <button onClick={handleCopy} className={styles.copyBtn}>
                             {copied ? '✓ Copied!' : 'Copy'}
                         </button>
                     </div>
 
-                    <div className={styles.warning}>
-                        <span className={styles.warningIcon}>⚠️</span>
+                    <div className={styles.notice}>
+                        <span className={styles.noticeIcon}>💡</span>
                         <p>{OWNERSHIP_WARNING}</p>
                     </div>
 
                     <div className={styles.actions}>
                         <button onClick={handleViewResponses} className="btn btn-primary">
-                            View Responses 💌
+                            View Responses
                         </button>
-                        <button onClick={() => setSuccess(null)} className="btn btn-secondary">
-                            Create Another
+                        <button onClick={() => setSuccess(null)} className={styles.createAnotherBtn}>
+                            Create another
                         </button>
                     </div>
                 </motion.div>
@@ -115,23 +137,32 @@ export default function CreatePage() {
                 className={styles.container}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
             >
-                <h1 className={styles.title}>Create Your Valentine 💕</h1>
-                <p className={styles.subtitle}>
-                    Fill in the details to create a personalized valentine request
-                </p>
+                <header className={styles.header}>
+                    <motion.div
+                        animate={{ y: [0, -5, 0] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                    >
+                        💌
+                    </motion.div>
+                    <h1 className={styles.title}>Create Your Valentine</h1>
+                    <p className={styles.subtitle}>
+                        Make it personal, make it special
+                    </p>
+                </header>
 
                 <form onSubmit={handleSubmit} className={styles.form}>
+                    {/* Recipient Name */}
                     <div className={styles.field}>
-                        <label className="label" htmlFor="recipientName">
-                            Their Name <span className={styles.required}>*</span>
+                        <label className={styles.label} htmlFor="recipientName">
+                            Who is this for? 💕
                         </label>
                         <input
                             id="recipientName"
                             type="text"
-                            className="input"
-                            placeholder="Who is this for?"
+                            className={styles.input}
+                            placeholder="Their name"
                             value={recipientName}
                             onChange={(e) => setRecipientName(e.target.value)}
                             required
@@ -139,100 +170,105 @@ export default function CreatePage() {
                         />
                     </div>
 
+                    {/* Mood Selector */}
                     <div className={styles.field}>
-                        <label className="label" htmlFor="message">
-                            Your Message <span className={styles.required}>*</span>
+                        <label className={styles.label}>
+                            Need inspiration?
                         </label>
-                        <textarea
-                            id="message"
-                            className="input textarea"
-                            placeholder="Write something from the heart..."
-                            value={message}
-                            onChange={(e) => setMessage(e.target.value)}
-                            required
-                            maxLength={500}
-                        />
-                        <div className={styles.charCount}>
-                            {message.length}/500
-                        </div>
-                    </div>
-
-                    <div className={styles.presets}>
-                        <p className={styles.presetsLabel}>Need inspiration?</p>
-                        <div className={styles.presetTabs}>
-                            {(Object.keys(MESSAGE_PRESETS) as PresetCategory[]).map((category) => (
-                                <div key={category} className={styles.presetCategory}>
-                                    <span className={styles.categoryLabel}>
-                                        {category === 'sweet' ? '💕 Sweet' : category === 'funny' ? '😂 Funny' : '🔥 Bold'}
-                                    </span>
-                                    <div className={styles.presetButtons}>
-                                        {MESSAGE_PRESETS[category].slice(0, 3).map((preset, i) => (
-                                            <button
-                                                key={i}
-                                                type="button"
-                                                className={styles.presetBtn}
-                                                onClick={() => handlePresetClick(preset)}
-                                            >
-                                                {preset}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
+                        <div className={styles.moodSelector}>
+                            {MOOD_OPTIONS.map((mood) => (
+                                <motion.button
+                                    key={mood.value}
+                                    type="button"
+                                    className={`${styles.moodPill} ${selectedMood === mood.value ? styles.moodPillActive : ''}`}
+                                    onClick={() => handleMoodSelect(mood.value)}
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                >
+                                    <span>{mood.emoji}</span>
+                                    {mood.label}
+                                </motion.button>
                             ))}
                         </div>
                     </div>
 
+                    {/* Message */}
                     <div className={styles.field}>
-                        <label className="label" htmlFor="senderName">
-                            Your Name <span className={styles.optional}>(optional)</span>
+                        <label className={styles.label} htmlFor="message">
+                            Your message
                         </label>
-                        <input
-                            id="senderName"
-                            type="text"
-                            className="input"
-                            placeholder="Who is this from?"
-                            value={senderName}
-                            onChange={(e) => setSenderName(e.target.value)}
-                            maxLength={50}
-                            disabled={anonymous}
-                        />
+                        <div className={styles.textareaWrapper}>
+                            <textarea
+                                id="message"
+                                className={styles.textarea}
+                                placeholder="Write something from the heart..."
+                                value={message}
+                                onChange={(e) => setMessage(e.target.value)}
+                                required
+                                maxLength={500}
+                            />
+                            <span className={styles.charCount}>{message.length}/500</span>
+                        </div>
                     </div>
 
-                    <div className={styles.toggle}>
-                        <label className={styles.toggleLabel}>
+                    {/* Sender Section */}
+                    <div className={styles.senderSection}>
+                        <div className={styles.field}>
+                            <label className={styles.label} htmlFor="senderName">
+                                Your name <span className={styles.optional}>(optional)</span>
+                            </label>
+                            <input
+                                id="senderName"
+                                type="text"
+                                className={styles.input}
+                                placeholder="Who is this from?"
+                                value={senderName}
+                                onChange={(e) => setSenderName(e.target.value)}
+                                maxLength={50}
+                                disabled={anonymous}
+                            />
+                        </div>
+
+                        <label className={styles.toggle}>
                             <input
                                 type="checkbox"
                                 checked={anonymous}
                                 onChange={(e) => setAnonymous(e.target.checked)}
                             />
-                            <span className={styles.toggleSlider}></span>
-                            <span className={styles.toggleText}>
-                                Send anonymously 🎭
-                                <small>Your name will be revealed only after they say Yes!</small>
+                            <span className={styles.toggleTrack}>
+                                <span className={styles.toggleThumb} />
                             </span>
+                            <div className={styles.toggleText}>
+                                <span className={styles.toggleLabel}>Send anonymously 🎭</span>
+                                <span className={styles.toggleHint}>Revealed only after they say yes</span>
+                            </div>
                         </label>
                     </div>
 
+                    {/* Error */}
                     <AnimatePresence>
                         {error && (
                             <motion.div
                                 className={styles.error}
-                                initial={{ opacity: 0, y: -10 }}
+                                initial={{ opacity: 0, y: -8 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
+                                exit={{ opacity: 0, y: -8 }}
                             >
                                 {error}
                             </motion.div>
                         )}
                     </AnimatePresence>
 
-                    <button
+                    {/* Submit */}
+                    <motion.button
                         type="submit"
-                        className={`btn btn-primary btn-lg ${styles.submit}`}
+                        className={styles.submit}
                         disabled={isLoading}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                     >
-                        {isLoading ? 'Creating...' : 'Create Valentine 💌'}
-                    </button>
+                        {isLoading ? 'Creating...' : 'Create Valentine 💖'}
+                    </motion.button>
                 </form>
             </motion.div>
         </main>
