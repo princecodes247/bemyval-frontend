@@ -1,0 +1,258 @@
+.main {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(ellipse at center, rgba(255, 107, 157, 0.25) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Loading */
+.loading {
+  font-size: 5rem;
+  z-index: 1;
+}
+
+/* Error Card */
+.errorCard {
+  position: relative;
+  z-index: 1;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 48px;
+  text-align: center;
+  max-width: 400px;
+}
+
+.errorIcon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+}
+
+.errorCard h2 {
+  margin-bottom: 8px;
+}
+
+/* Expired Card */
+.expiredCard {
+  position: relative;
+  z-index: 1;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 48px;
+  text-align: center;
+  max-width: 400px;
+}
+
+.expiredIcon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+}
+
+.expiredCard h2 {
+  margin-bottom: 8px;
+  color: var(--color-primary);
+}
+
+/* Responded Card */
+.respondedCard {
+  position: relative;
+  z-index: 1;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 48px;
+  text-align: center;
+  max-width: 400px;
+}
+
+.respondedIcon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+}
+
+/* Valentine Card */
+.valentineCard {
+  position: relative;
+  z-index: 1;
+  background: rgba(45, 45, 68, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 107, 157, 0.2);
+  border-radius: var(--radius-xl);
+  padding: 48px;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 80px rgba(255, 107, 157, 0.15);
+}
+
+.decorativeHeart {
+  font-size: 3rem;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+.recipientName {
+  color: var(--color-primary-light);
+}
+
+.question {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-weight: 800;
+  margin-bottom: 32px;
+  line-height: 1.2;
+}
+
+.messageBox {
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.message {
+  font-size: 1.125rem;
+  color: var(--color-text);
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.sender {
+  margin-top: 16px;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.anonymousBadge {
+  margin-top: 16px;
+  font-size: 0.875rem;
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.yesBtn {
+  width: 200px;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.inlineError {
+  margin-top: 16px;
+  color: #ef4444;
+  font-size: 0.875rem;
+}
+
+/* Celebration Card */
+.celebrationCard {
+  position: relative;
+  z-index: 1;
+  background: rgba(45, 45, 68, 0.9);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(255, 107, 157, 0.4);
+  border-radius: var(--radius-xl);
+  padding: 64px 48px;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0 20px 80px rgba(255, 107, 157, 0.3);
+}
+
+.celebrationIcon {
+  font-size: 5rem;
+  margin-bottom: 24px;
+}
+
+.celebrationTitle {
+  font-size: 4rem;
+  font-weight: 800;
+  background: var(--gradient-hero);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 16px;
+}
+
+.celebrationText {
+  font-size: 1.25rem;
+  color: var(--color-text);
+}
+
+.reveal {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.reveal p {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+}
+
+.reveal h3 {
+  font-size: 1.5rem;
+  color: var(--color-primary-light);
+}
+
+/* Thinking Card */
+.thinkingCard {
+  position: relative;
+  z-index: 1;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 48px;
+  text-align: center;
+  max-width: 450px;
+}
+
+.thinkingIcon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+}
+
+.thinkingCard h2 {
+  margin-bottom: 12px;
+}
+
+.thinkingCard p {
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .valentineCard {
+    padding: 32px 24px;
+  }
+  
+  .celebrationCard {
+    padding: 48px 24px;
+  }
+  
+  .messageBox {
+    padding: 20px;
+  }
+}
