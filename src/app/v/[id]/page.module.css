@@ -140,6 +140,39 @@
   font-weight: 500;
 }
 
+/* GIF Decoration */
+.gifDecoration {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.gifImage {
+  max-width: 120px;
+  max-height: 120px;
+  border-radius: var(--radius-md);
+}
+
+/* Still Button (normal behavior) */
+.stillBtn {
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: var(--font-primary);
+  color: var(--color-text-soft);
+  background: var(--white);
+  border: 2px solid var(--gray);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-soft);
+}
+
+.stillBtn:hover {
+  background: var(--blush);
+  border-color: var(--pink-soft);
+  color: var(--color-text);
+}
+
 .buttons {
   display: flex;
   flex-direction: column;

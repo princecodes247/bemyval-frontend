@@ -25,6 +25,9 @@ export interface PublicValentinePage {
   message: string;
   anonymous: boolean;
   senderName?: string;
+  theme: string;
+  gifId: string;
+  buttonBehavior: string;
   createdAt: Date;
   expiresAt: Date;
   hasResponded: boolean;
@@ -49,6 +52,9 @@ export interface CreateValentineRequest {
   message: string;
   anonymous: boolean;
   senderName?: string;
+  theme?: string;
+  gifId?: string;
+  buttonBehavior?: string;
 }
 
 export interface CreateValentineResponse {
@@ -63,7 +69,8 @@ export interface SubmitResponseRequest {
 
 export interface SubmitResponseResponse {
   success: boolean;
-  message: string;
+  answer: 'yes' | 'thinking';
+  senderName?: string; // Revealed when anonymous valentine is accepted
 }
 
 export interface GetResponsesResponse {

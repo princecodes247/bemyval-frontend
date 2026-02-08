@@ -1,0 +1,29 @@
+.container {
+  position: relative;
+  width: 100%;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button {
+  position: relative;
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: var(--font-primary);
+  color: var(--color-text-soft);
+  background: var(--white);
+  border: 2px solid var(--gray);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  box-shadow: var(--shadow-soft);
+}
+
+.button:hover {
+  background: var(--blush);
+  border-color: var(--pink-soft);
+}

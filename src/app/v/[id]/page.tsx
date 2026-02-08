@@ -2,11 +2,12 @@
 
 import { useState, useEffect, use } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { YES_MESSAGES, EXPIRED_MESSAGE } from '../../../lib/constants';
+import { YES_MESSAGES, EXPIRED_MESSAGE, THEME_OPTIONS, GIF_OPTIONS } from '../../../lib/constants';
 import type { PublicValentinePage } from '../../../lib/types';
 import { api } from '../../../lib/api';
 import { FloatingHearts } from '@/components/FloatingHearts';
 import { PlayfulButton } from '@/components/PlayfulButton';
+import { ShrinkButton } from '@/components/ShrinkButton';
 import { Confetti } from '@/components/Confetti';
 import styles from './page.module.css';
 
@@ -16,6 +17,17 @@ interface PageProps {
 
 type ViewState = 'loading' | 'valentine' | 'yes' | 'thinking' | 'expired' | 'error' | 'already_responded';
 
+// Get theme by ID with fallback
+const getTheme = (themeId: string) => {
+    return THEME_OPTIONS.find(t => t.id === themeId) || THEME_OPTIONS[0];
+};
+
+// Get GIF URL by ID
+const getGifUrl = (gifId: string) => {
+    const gif = GIF_OPTIONS.find(g => g.id === gifId);
+    return gif?.url || null;
+};
+
 export default function ValentinePage({ params }: PageProps) {
     const { id } = use(params);
     const [viewState, setViewState] = useState<ViewState>('loading');
@@ -23,6 +35,11 @@ export default function ValentinePage({ params }: PageProps) {
     const [error, setError] = useState('');
     const [showConfetti, setShowConfetti] = useState(false);
     const [yesMessage, setYesMessage] = useState('');
+    const [revealedSender, setRevealedSender] = useState<string | null>(null);
+
+    // Get theme colors from valentine data
+    const theme = valentine ? getTheme(valentine.theme) : THEME_OPTIONS[0];
+    const gifUrl = valentine?.gifId ? getGifUrl(valentine.gifId) : null;
 
     useEffect(() => {
         const fetchValentine = async () => {
@@ -51,13 +68,24 @@ export default function ValentinePage({ params }: PageProps) {
 
     const handleYes = async () => {
         try {
-            await api.submitResponse(id, { answer: 'yes' });
+            const response = await api.submitResponse(id, { answer: 'yes' });
             setYesMessage(YES_MESSAGES[Math.floor(Math.random() * YES_MESSAGES.length)]);
             setShowConfetti(true);
+
+            // If anonymous, the response will include the revealed sender name
+            if (response.senderName) {
+                setRevealedSender(response.senderName);
+            }
+
             setViewState('yes');
         } catch (err: unknown) {
             const apiError = err as { message?: string };
-            setError(apiError.message || 'Something went wrong');
+            // Handle already responded error specifically
+            if (apiError.message?.includes('Already responded')) {
+                setViewState('already_responded');
+            } else {
+                setError(apiError.message || 'Something went wrong');
+            }
         }
     };
 
@@ -67,9 +95,20 @@ export default function ValentinePage({ params }: PageProps) {
             setViewState('thinking');
         } catch (err: unknown) {
             const apiError = err as { message?: string };
-            setError(apiError.message || 'Something went wrong');
+            // Handle already responded error specifically
+            if (apiError.message?.includes('Already responded')) {
+                setViewState('already_responded');
+            } else {
+                setError(apiError.message || 'Something went wrong');
+            }
         }
     };
+
+    // CSS custom properties for theme
+    const themeStyles = {
+        '--theme-primary': theme.primary,
+        '--theme-secondary': theme.secondary,
+    } as React.CSSProperties;
 
     // Loading state
     if (viewState === 'loading') {
@@ -140,7 +179,7 @@ export default function ValentinePage({ params }: PageProps) {
     // Yes celebration state
     if (viewState === 'yes') {
         return (
-            <main className={styles.main}>
+            <main className={styles.main} style={themeStyles}>
                 <Confetti active={showConfetti} />
                 <FloatingHearts />
                 <motion.div
@@ -148,6 +187,7 @@ export default function ValentinePage({ params }: PageProps) {
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5, type: 'spring' }}
+                    style={{ boxShadow: `0 16px 48px ${theme.primary}40` }}
                 >
                     <motion.div
                         className={styles.celebrationIcon}
@@ -156,10 +196,15 @@ export default function ValentinePage({ params }: PageProps) {
                     >
                         💖
                     </motion.div>
-                    <h2 className={styles.celebrationTitle}>YES!</h2>
+                    <h2 className={styles.celebrationTitle} style={{
+                        background: `linear-gradient(135deg, ${theme.primary} 0%, ${theme.secondary} 100%)`,
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                    }}>YES!</h2>
                     <p className={styles.celebrationText}>{yesMessage}</p>
 
-                    {valentine?.anonymous && valentine?.senderName && (
+                    {revealedSender && (
                         <motion.div
                             className={styles.reveal}
                             initial={{ opacity: 0, y: 20 }}
@@ -167,7 +212,7 @@ export default function ValentinePage({ params }: PageProps) {
                             transition={{ delay: 1 }}
                         >
                             <p>This was from:</p>
-                            <h3>{valentine.senderName}</h3>
+                            <h3 style={{ color: theme.primary }}>{revealedSender}</h3>
                         </motion.div>
                     )}
                 </motion.div>
@@ -196,13 +241,38 @@ export default function ValentinePage({ params }: PageProps) {
         );
     }
 
+    // Render the "No" button based on behavior
+    const renderNoButton = () => {
+        const behavior = valentine?.buttonBehavior || 'dodge';
+
+        switch (behavior) {
+            case 'shrink':
+                return <ShrinkButton onGiveUp={handleThinking} />;
+            case 'still':
+                return (
+                    <button
+                        onClick={handleThinking}
+                        className={styles.stillBtn}
+                    >
+                        Let me think... 🤔
+                    </button>
+                );
+            case 'dodge':
+            default:
+                return <PlayfulButton onGiveUp={handleThinking} />;
+        }
+    };
+
     // Main valentine view
     return (
-        <main className={styles.main}>
+        <main className={styles.main} style={themeStyles}>
             <FloatingHearts />
             <Confetti active={showConfetti} />
 
-            <div className={styles.glow} />
+            <div
+                className={styles.glow}
+                style={{ background: `radial-gradient(ellipse at center, ${theme.primary}25 0%, transparent 70%)` }}
+            />
 
             <motion.div
                 className={styles.valentineCard}
@@ -236,7 +306,7 @@ export default function ValentinePage({ params }: PageProps) {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4, duration: 0.6 }}
                 >
-                    Will you be my <span className="gradient-text">Valentine</span>?
+                    Will you be my <span style={{ color: theme.primary }}>Valentine</span>?
                 </motion.h2>
 
                 <motion.div
@@ -250,9 +320,27 @@ export default function ValentinePage({ params }: PageProps) {
                         <p className={styles.sender}>— {valentine.senderName}</p>
                     )}
                     {valentine?.anonymous && (
-                        <p className={styles.anonymousBadge}>From: Your Secret Admirer 🎭</p>
+                        <p className={styles.anonymousBadge} style={{ color: theme.primary }}>
+                            From: Your Secret Admirer 🎭
+                        </p>
                     )}
                 </motion.div>
+
+                {/* GIF decoration */}
+                {gifUrl && (
+                    <motion.div
+                        className={styles.gifDecoration}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        <img
+                            src={gifUrl}
+                            alt="Valentine animation"
+                            className={styles.gifImage}
+                        />
+                    </motion.div>
+                )}
 
                 <motion.div
                     className={styles.buttons}
@@ -263,11 +351,12 @@ export default function ValentinePage({ params }: PageProps) {
                     <button
                         onClick={handleYes}
                         className={`btn btn-primary btn-lg ${styles.yesBtn}`}
+                        style={{ background: theme.primary }}
                     >
                         Yes! 💖
                     </button>
 
-                    <PlayfulButton onGiveUp={handleThinking} />
+                    {renderNoButton()}
                 </motion.div>
 
                 <AnimatePresence>
