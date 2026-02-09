@@ -12,7 +12,7 @@ import type {
   ApiError,
 } from './types';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 // Response type for getMyValentines
 export interface MyValentine {
@@ -72,7 +72,7 @@ class ApiClient {
     data: CreateValentineRequest,
     ownerToken?: string
   ): Promise<CreateValentineResponse> {
-    return this.request<CreateValentineResponse>('/valentine', {
+    return this.request<CreateValentineResponse>('/v1/valentine', {
       method: 'POST',
       body: JSON.stringify({
         ...data,
@@ -85,14 +85,14 @@ class ApiClient {
    * Get a valentine page (public data)
    */
   async getValentine(id: string): Promise<PublicValentinePage> {
-    return this.request<PublicValentinePage>(`/valentine/${id}`);
+    return this.request<PublicValentinePage>(`/v1/valentine/${id}`);
   }
 
   /**
    * Submit a response to a valentine
    */
   async submitResponse(id: string, data: SubmitResponseRequest): Promise<SubmitResponseResponse> {
-    return this.request<SubmitResponseResponse>(`/valentine/${id}/respond`, {
+    return this.request<SubmitResponseResponse>(`/v1/valentine/${id}/respond`, {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -102,7 +102,7 @@ class ApiClient {
    * Get responses for a valentine (requires owner key)
    */
   async getResponses(id: string, ownerKey: string): Promise<GetResponsesResponse> {
-    return this.request<GetResponsesResponse>(`/valentine/${id}/response`, {
+    return this.request<GetResponsesResponse>(`/v1/valentine/${id}/response`, {
       headers: {
         'X-Owner-Key': ownerKey,
       },
@@ -113,7 +113,7 @@ class ApiClient {
    * Get all valentines for the current user (requires owner token)
    */
   async getMyValentines(ownerToken: string): Promise<GetMyValentinesResponse> {
-    return this.request<GetMyValentinesResponse>('/valentine/my', {
+    return this.request<GetMyValentinesResponse>('/v1/valentine/my', {
       headers: {
         'X-Owner-Token': ownerToken,
       },
