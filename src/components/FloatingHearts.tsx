@@ -16,7 +16,7 @@ interface Heart {
 export function FloatingHearts() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const heartsRef = useRef<Heart[]>([]);
-    const animationRef = useRef<number>();
+    const animationRef = useRef<number | null>(null);
 
     useEffect(() => {
         const canvas = canvasRef.current;

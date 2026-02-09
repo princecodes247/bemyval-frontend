@@ -19,7 +19,7 @@ const COLORS = ['#FF6B9D', '#FF8FB5', '#FFD93D', '#C44569', '#FF69B4'];
 export function Confetti({ active }: { active: boolean }) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const particlesRef = useRef<Particle[]>([]);
-    const animationRef = useRef<number>();
+    const animationRef = useRef<number | null>(null);
 
     const createParticles = useCallback(() => {
         const particles: Particle[] = [];
