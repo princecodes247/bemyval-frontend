@@ -400,7 +400,7 @@ export default function CreatePage() {
                                                 whileHover={{ scale: 1.05 }}
                                                 whileTap={{ scale: 0.95 }}
                                                 style={{
-                                                    background: `linear-gradient(135deg, ${theme.primary} 0%, ${theme.secondary} 100%)`,
+                                                    background: `linear-gradient(135deg, ${theme.id === "noir" ? theme.secondary : theme.primary} 0%, ${theme.id === "noir" ? "#0f0f1a" : theme.secondary} 100%)`,
                                                 }}
                                                 title={theme.name}
                                             />
@@ -457,7 +457,6 @@ export default function CreatePage() {
                                     </div>
                                 </div>
                             </div>
-
                             {/* Live Preview */}
                             <div className={styles.previewSection}>
                                 <label className={styles.optionLabel}>Preview</label>
@@ -466,14 +465,46 @@ export default function CreatePage() {
                                     style={{
                                         '--preview-primary': currentTheme?.primary,
                                         '--preview-secondary': currentTheme?.secondary,
+                                        '--preview-accent': currentTheme?.accent,
+                                        background: selectedTheme === 'noir'
+                                            ? 'linear-gradient(180deg, #1e1e30 0%, #16162a 100%)'
+                                            : 'var(--white)',
+                                        borderTop: `3px solid ${currentTheme?.primary}`,
+                                        boxShadow: selectedTheme === 'noir'
+                                            ? `0 8px 24px rgba(249, 168, 212, 0.12), 0 4px 12px rgba(0,0,0,0.3)`
+                                            : `0 8px 24px ${currentTheme?.primary}15, 0 4px 12px rgba(0,0,0,0.06)`,
                                     } as React.CSSProperties}
                                 >
-                                    <div className={styles.previewHeart}>💕</div>
-                                    <h3 className={styles.previewRecipient}>{recipientName || 'Someone'},</h3>
+                                    <div
+                                        className={styles.previewHeart}
+                                        style={{ filter: `drop-shadow(0 2px 6px ${currentTheme?.primary}${selectedTheme === 'noir' ? '10' : '40'})` }}
+                                    >
+                                        💕
+                                    </div>
+                                    <h3
+                                        className={styles.previewRecipient}
+                                        style={{ color: selectedTheme === 'noir' ? '#FAF5FF' : undefined }}
+                                    >
+                                        {recipientName || 'Someone'},
+                                    </h3>
                                     <h4 className={styles.previewQuestion}>
-                                        Will you be my <span style={{ color: currentTheme?.primary }}>Valentine</span>?
+                                        <span style={{ color: selectedTheme === 'noir' ? '#E9D5FF' : undefined }}>
+                                            Will you be my{' '}
+                                        </span>
+                                        <span style={{ color: currentTheme?.primary }}>Valentine</span>?
                                     </h4>
-                                    <p className={styles.previewMessage}>&ldquo;{message || 'Your message here...'}&rdquo;</p>
+                                    <div
+                                        className={styles.previewMessageBox}
+                                        style={{
+                                            background: selectedTheme === 'noir' ? 'rgba(255,255,255,0.06)' : currentTheme?.accent,
+                                            borderLeft: `2px solid ${currentTheme?.primary}`,
+                                            borderRight: `2px solid ${currentTheme?.primary}`,
+                                        }}
+                                    >
+                                        <p className={styles.previewMessage} style={{ color: selectedTheme === 'noir' ? '#F3E8FF' : undefined }}>
+                                            &ldquo;{message || 'Your message here...'}&rdquo;
+                                        </p>
+                                    </div>
                                     {selectedGif !== 'none' && (
                                         <div className={styles.previewGif}>
                                             <img
@@ -486,7 +517,7 @@ export default function CreatePage() {
                                     <div className={styles.previewButtons}>
                                         <span
                                             className={styles.previewYes}
-                                            style={{ background: currentTheme?.primary }}
+                                            style={{ background: selectedTheme === 'noir' ? currentTheme?.secondary : currentTheme?.primary }}
                                         >
                                             Yes! 💖
                                         </span>

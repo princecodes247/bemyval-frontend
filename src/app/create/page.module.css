@@ -460,13 +460,16 @@
 
 /* Theme Swatches */
 .themeGrid {
-  display: flex;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
 }
 
 .themeSwatch {
-  width: 48px;
-  height: 48px;
+  width: 100%;
+  aspect-ratio: 1;
+  min-width: 40px;
+  max-width: 48px;
   border-radius: var(--radius-md);
   border: 3px solid transparent;
   cursor: pointer;
@@ -476,11 +479,13 @@
 
 .themeSwatch:hover {
   transform: scale(1.1);
+  box-shadow: var(--shadow-md);
 }
 
 .themeSwatchActive {
   border-color: var(--dark);
-  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
+  transform: scale(1.05);
 }
 
 /* GIF Grid */
@@ -608,13 +613,20 @@
   margin-bottom: 16px;
 }
 
+.previewMessageBox {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+  transition: all var(--transition-normal);
+}
+
 .previewMessage {
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   font-style: italic;
   color: var(--color-text-soft);
   line-height: 1.5;
-  margin-bottom: 16px;
-  max-height: 60px;
+  margin: 0;
+  max-height: 40px;
   overflow: hidden;
   text-overflow: ellipsis;
 }

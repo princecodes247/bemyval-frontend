@@ -291,15 +291,28 @@ export default function ValentinePage({ params }: PageProps) {
         }
     };
 
+    // Check if theme is dark (noir)
+    const isDarkTheme = valentine?.theme === 'noir';
+    const textColor = isDarkTheme ? '#FAF5FF' : undefined;
+    const subtextColor = isDarkTheme ? '#E9D5FF' : undefined;
+
     // Main valentine view
     return (
-        <main className={styles.main} style={themeStyles}>
+        <main
+            className={styles.main}
+            style={{
+                ...themeStyles,
+                background: isDarkTheme
+                    ? `linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%)`
+                    : `linear-gradient(135deg, ${theme.accent} 0%, ${theme.secondary}40 100%)`,
+            }}
+        >
             <FloatingHearts />
             <Confetti active={showConfetti} />
 
             <div
                 className={styles.glow}
-                style={{ background: `radial-gradient(ellipse at center, ${theme.primary}25 0%, transparent 70%)` }}
+                style={{ background: `radial-gradient(ellipse at center, ${theme.primary}30 0%, ${theme.secondary}15 50%, transparent 70%)` }}
             />
 
             <motion.div
@@ -307,6 +320,15 @@ export default function ValentinePage({ params }: PageProps) {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: 'easeOut' }}
+                style={{
+                    borderTop: `4px solid ${theme.primary}`,
+                    boxShadow: isDarkTheme
+                        ? `0 20px 60px rgba(249, 168, 212, 0), 0 8px 24px rgba(0,0,0,0), inset 0 1px 0 rgba(255,255,255,0)`
+                        : `0 20px 60px ${theme.primary}20, 0 8px 24px rgba(0,0,0,0.08)`,
+                    background: isDarkTheme
+                        ? 'linear-gradient(180deg, #1e1e30 0%, #16162a 100%)'
+                        : 'var(--white)',
+                }}
             >
                 <motion.div
                     className={styles.decorativeHeart}
@@ -315,6 +337,7 @@ export default function ValentinePage({ params }: PageProps) {
                         rotate: [0, 5, -5, 0]
                     }}
                     transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                    style={{ filter: `drop-shadow(0 2px 6px ${theme?.primary}${isDarkTheme ? '10' : '40'})` }}
                 >
                     💕
                 </motion.div>
@@ -324,8 +347,9 @@ export default function ValentinePage({ params }: PageProps) {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2, duration: 0.6 }}
+                    style={{ color: textColor }}
                 >
-                    <span className={styles.recipientName}>{valentine?.recipientName}</span>,
+                    <span className={styles.recipientName} style={{ color: textColor }}>{valentine?.recipientName}</span>,
                 </motion.h1>
 
                 <motion.h2
@@ -333,8 +357,9 @@ export default function ValentinePage({ params }: PageProps) {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4, duration: 0.6 }}
+                    style={{ color: subtextColor }}
                 >
-                    Will you be my <span style={{ color: theme.primary }}>Valentine</span>?
+                    Will you be my <span style={{ color: isDarkTheme ? theme.secondary : theme.primary }}>Valentine</span>?
                 </motion.h2>
 
                 <motion.div
@@ -342,10 +367,15 @@ export default function ValentinePage({ params }: PageProps) {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.6, duration: 0.6 }}
+                    style={{
+                        background: isDarkTheme ? 'rgba(255,255,255,0.08)' : theme.accent,
+                        borderLeft: `3px solid ${isDarkTheme ? theme.secondary : theme.primary}`,
+                        borderRight: `3px solid ${isDarkTheme ? theme.secondary : theme.primary}`,
+                    }}
                 >
-                    <p className={styles.message}>&ldquo;{valentine?.message}&rdquo;</p>
+                    <p className={styles.message} style={{ color: isDarkTheme ? '#E5E7EB' : undefined }}>&ldquo;{valentine?.message}&rdquo;</p>
                     {!valentine?.anonymous && valentine?.senderName && (
-                        <p className={styles.sender}>— {valentine.senderName}</p>
+                        <p className={styles.sender} style={{ color: isDarkTheme ? '#9CA3AF' : undefined }}>— {valentine.senderName}</p>
                     )}
                     {valentine?.anonymous && (
                         <p className={styles.anonymousBadge} style={{ color: theme.primary }}>
@@ -379,7 +409,7 @@ export default function ValentinePage({ params }: PageProps) {
                     <button
                         onClick={handleYes}
                         className={`btn btn-primary btn-lg ${styles.yesBtn}`}
-                        style={{ background: theme.primary }}
+                        style={{ background: isDarkTheme ? theme.secondary : theme.primary }}
                     >
                         Yes! 💖
                     </button>

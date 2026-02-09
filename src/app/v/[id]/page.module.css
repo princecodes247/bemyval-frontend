@@ -286,8 +286,11 @@
   }
   
   .messageBox {
-    padding: 20px;
-  }
+  margin: 24px 0;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-normal);
+}
   
   .decorativeHeart {
     font-size: 2.5rem;
