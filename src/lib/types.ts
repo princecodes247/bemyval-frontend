@@ -52,6 +52,7 @@ export interface CreateValentineRequest {
   message: string;
   anonymous: boolean;
   senderName?: string;
+  senderEmail?: string;
   theme?: string;
   gifId?: string;
   buttonBehavior?: string;

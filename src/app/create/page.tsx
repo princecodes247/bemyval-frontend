@@ -85,6 +85,7 @@ export default function CreatePage() {
     const [recipientName, setRecipientName] = useState('');
     const [message, setMessage] = useState('');
     const [senderName, setSenderName] = useState('');
+    const [senderEmail, setSenderEmail] = useState('');
     const [anonymous, setAnonymous] = useState(false);
     const [selectedMood, setSelectedMood] = useState<MoodType | null>(null);
 
@@ -136,6 +137,7 @@ export default function CreatePage() {
                 message: message.trim(),
                 anonymous,
                 senderName: senderName.trim() || undefined,
+                senderEmail: senderEmail.trim() || undefined,
                 theme: selectedTheme,
                 gifId: selectedGif,
                 buttonBehavior: selectedBehavior,
@@ -355,6 +357,24 @@ export default function CreatePage() {
                                         maxLength={50}
                                         disabled={anonymous}
                                     />
+                                </div>
+
+                                <div className={styles.field}>
+                                    <label className={styles.label} htmlFor="senderEmail">
+                                        Your email <span className={styles.optional}>(optional)</span>
+                                    </label>
+                                    <input
+                                        id="senderEmail"
+                                        type="email"
+                                        className={styles.input}
+                                        placeholder="Get notified when they respond 💌"
+                                        value={senderEmail}
+                                        onChange={(e) => setSenderEmail(e.target.value)}
+                                        maxLength={100}
+                                    />
+                                    <p className={styles.helperText}>
+                                        We&apos;ll only use this to tell you their answer. No spam.
+                                    </p>
                                 </div>
 
                                 <label className={styles.toggle}>

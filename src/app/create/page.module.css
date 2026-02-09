@@ -96,6 +96,13 @@
   cursor: not-allowed;
 }
 
+.helperText {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 6px;
+  margin-left: 2px;
+}
+
 /* Mood Selector */
 .moodSelector {
   display: flex;
