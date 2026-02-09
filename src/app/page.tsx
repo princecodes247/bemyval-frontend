@@ -1,11 +1,38 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { FloatingHearts } from '@/components/FloatingHearts';
+import { getOwnerToken } from '@/lib/storage';
+import { api, type MyValentine } from '@/lib/api';
 import styles from './page.module.css';
 
 export default function HomePage() {
+    const [valentines, setValentines] = useState<MyValentine[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchValentines = async () => {
+            const token = getOwnerToken();
+            if (!token) {
+                setIsLoading(false);
+                return;
+            }
+
+            try {
+                const result = await api.getMyValentines(token);
+                setValentines(result.valentines);
+            } catch {
+                // Silently fail - user just won't see the button
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchValentines();
+    }, []);
+
     return (
         <main className={styles.main}>
             <FloatingHearts />
@@ -50,6 +77,7 @@ export default function HomePage() {
                 </motion.p>
 
                 <motion.div
+                    className={styles.ctaGroup}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.3 }}
@@ -57,6 +85,26 @@ export default function HomePage() {
                     <Link href="/create" className={styles.cta}>
                         Create Your Valentine 💌
                     </Link>
+
+                    <AnimatePresence>
+                        {!isLoading && valentines.length > 0 && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                            >
+                                <Link
+                                    href={`/my/${valentines[0].id}`}
+                                    className={styles.viewValentinesBtn}
+                                >
+                                    View My Valentines
+                                    <span className={styles.valentineCount}>
+                                        {valentines.length}
+                                    </span>
+                                </Link>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </motion.div>
 
                 <motion.p
@@ -80,3 +128,4 @@ export default function HomePage() {
         </main>
     );
 }
+

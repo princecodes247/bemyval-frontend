@@ -2,7 +2,39 @@
 // Val4Me - Local Storage Utilities
 // ============================================
 
+const OWNER_TOKEN_KEY = 'bemyval_token';
 const STORAGE_PREFIX = 'bemyval_';
+
+// ============================================
+// Owner Token - Links all valentines to a user
+// ============================================
+
+/**
+ * Set the owner token (received from backend on first valentine creation)
+ */
+export function setOwnerToken(token: string): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(OWNER_TOKEN_KEY, token);
+}
+
+/**
+ * Get the owner token (returns null if doesn't exist)
+ */
+export function getOwnerToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem(OWNER_TOKEN_KEY);
+}
+
+/**
+ * Check if user has an owner token
+ */
+export function hasOwnerToken(): boolean {
+  return getOwnerToken() !== null;
+}
+
+// ============================================
+// Per-Valentine Keys - For accessing responses
+// ============================================
 
 interface StoredValentine {
   id: string;
@@ -18,7 +50,7 @@ function getKey(id: string): string {
 }
 
 /**
- * Store a valentine's owner key
+ * Store a valentine's owner key (for accessing responses)
  */
 export function storeValentineKey(id: string, ownerKey: string): void {
   if (typeof window === 'undefined') return;
@@ -49,34 +81,3 @@ export function getValentineKey(id: string): string | null {
   }
 }
 
-/**
- * Check if user owns a valentine
- */
-export function isOwner(id: string): boolean {
-  return getValentineKey(id) !== null;
-}
-
-/**
- * Get all stored valentines
- */
-export function getAllStoredValentines(): StoredValentine[] {
-  if (typeof window === 'undefined') return [];
-  
-  const valentines: StoredValentine[] = [];
-  
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key?.startsWith(STORAGE_PREFIX)) {
-      try {
-        const data = JSON.parse(localStorage.getItem(key) || '');
-        valentines.push(data);
-      } catch {
-        // Skip invalid entries
-      }
-    }
-  }
-  
-  return valentines.sort((a, b) => 
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-}

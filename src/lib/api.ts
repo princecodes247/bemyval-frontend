@@ -14,6 +14,25 @@ import type {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
+// Response type for getMyValentines
+export interface MyValentine {
+  id: string;
+  recipientName: string;
+  message: string;
+  theme: string;
+  createdAt: string;
+  hasResponse: boolean;
+  response: {
+    answer: string;
+    respondedAt: string;
+  } | null;
+}
+
+export interface GetMyValentinesResponse {
+  count: number;
+  valentines: MyValentine[];
+}
+
 class ApiClient {
   private baseUrl: string;
 
@@ -46,11 +65,19 @@ class ApiClient {
 
   /**
    * Create a new valentine page
+   * @param data - Valentine data
+   * @param ownerToken - Owner token to link valentines to user
    */
-  async createValentine(data: CreateValentineRequest): Promise<CreateValentineResponse> {
+  async createValentine(
+    data: CreateValentineRequest,
+    ownerToken?: string
+  ): Promise<CreateValentineResponse> {
     return this.request<CreateValentineResponse>('/api/valentine', {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        ...data,
+        ownerToken,
+      }),
     });
   }
 
@@ -81,6 +108,18 @@ class ApiClient {
       },
     });
   }
+
+  /**
+   * Get all valentines for the current user (requires owner token)
+   */
+  async getMyValentines(ownerToken: string): Promise<GetMyValentinesResponse> {
+    return this.request<GetMyValentinesResponse>('/api/valentine/my', {
+      headers: {
+        'X-Owner-Token': ownerToken,
+      },
+    });
+  }
 }
 
 export const api = new ApiClient(API_BASE);
+

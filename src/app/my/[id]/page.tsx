@@ -4,8 +4,8 @@ import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import type { ValentineResponse, PublicValentinePage } from '@/lib/types';
-import { api } from '@/lib/api';
-import { getValentineKey, isOwner } from '@/lib/storage';
+import { api, type MyValentine } from '@/lib/api';
+import { getValentineKey, getOwnerToken } from '@/lib/storage';
 import { FloatingHearts } from '@/components/FloatingHearts';
 import { Confetti } from '@/components/Confetti';
 import styles from './page.module.css';
@@ -21,25 +21,40 @@ export default function OwnerDashboard({ params }: PageProps) {
     const [viewState, setViewState] = useState<ViewState>('loading');
     const [valentine, setValentine] = useState<PublicValentinePage | null>(null);
     const [responses, setResponses] = useState<ValentineResponse[]>([]);
+    const [allValentines, setAllValentines] = useState<MyValentine[]>([]);
     const [error, setError] = useState('');
     const [showConfetti, setShowConfetti] = useState(false);
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
-            // Check if user owns this valentine
-            if (!isOwner(id)) {
-                setViewState('unauthorized');
-                return;
-            }
-
-            const ownerKey = getValentineKey(id);
-            if (!ownerKey) {
+            // Check if user has an owner token
+            const ownerToken = getOwnerToken();
+            if (!ownerToken) {
                 setViewState('unauthorized');
                 return;
             }
 
             try {
-                // Fetch valentine details and responses in parallel
+                // Get all user's valentines to verify ownership
+                const myValentines = await api.getMyValentines(ownerToken);
+                setAllValentines(myValentines.valentines);
+
+                // Check if this valentine belongs to the user
+                const ownsValentine = myValentines.valentines.some(v => v.id === id);
+                if (!ownsValentine) {
+                    setViewState('unauthorized');
+                    return;
+                }
+
+                // Get per-valentine key for response API
+                const ownerKey = getValentineKey(id);
+                if (!ownerKey) {
+                    setViewState('unauthorized');
+                    return;
+                }
+
+                // Fetch valentine details and responses
                 const [valentineData, responsesData] = await Promise.all([
                     api.getValentine(id).catch(() => null),
                     api.getResponses(id, ownerKey),
@@ -68,12 +83,15 @@ export default function OwnerDashboard({ params }: PageProps) {
         fetchData();
     }, [id]);
 
+
     const shareUrl = typeof window !== 'undefined'
         ? `${window.location.origin}/v/${id}`
         : '';
 
     const handleCopy = async () => {
         await navigator.clipboard.writeText(shareUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
     };
 
     // Loading
@@ -162,9 +180,15 @@ export default function OwnerDashboard({ params }: PageProps) {
                     <p className={styles.shareLabel}>Share this link:</p>
                     <div className={styles.linkBox}>
                         <code className={styles.link}>{shareUrl}</code>
-                        <button onClick={handleCopy} className={styles.copyBtn}>
-                            Copy
-                        </button>
+                        <motion.button
+                            onClick={handleCopy}
+                            className={styles.copyBtn}
+                            whileTap={{ scale: 0.95 }}
+                            animate={copied ? { scale: [1, 1.1, 1] } : {}}
+                            transition={{ duration: 0.2 }}
+                        >
+                            {copied ? '✓ Copied!' : 'Copy'}
+                        </motion.button>
                     </div>
                 </div>
 

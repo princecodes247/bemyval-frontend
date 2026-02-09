@@ -60,6 +60,7 @@ export interface CreateValentineRequest {
 export interface CreateValentineResponse {
   id: string;
   ownerKey: string;
+  ownerToken?: string; // Returned when first valentine is created (client should store this)
   shareUrl: string;
 }
 

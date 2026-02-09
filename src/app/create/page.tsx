@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '@/lib/api';
-import { storeValentineKey } from '@/lib/storage';
+import { storeValentineKey, getOwnerToken, setOwnerToken } from '@/lib/storage';
 import { FloatingHearts } from '@/components/FloatingHearts';
 import styles from './page.module.css';
 import {
@@ -126,6 +126,9 @@ export default function CreatePage() {
         setIsLoading(true);
 
         try {
+            // Get existing owner token (if any) to link valentines
+            const existingToken = getOwnerToken();
+
             const result = await api.createValentine({
                 recipientName: recipientName.trim(),
                 message: message.trim(),
@@ -134,7 +137,12 @@ export default function CreatePage() {
                 theme: selectedTheme,
                 gifId: selectedGif,
                 buttonBehavior: selectedBehavior,
-            });
+            }, existingToken || undefined);
+
+            // Store the owner token if this is the first valentine (backend returns it)
+            if (result.ownerToken) {
+                setOwnerToken(result.ownerToken);
+            }
 
             storeValentineKey(result.id, result.ownerKey);
 
@@ -150,9 +158,14 @@ export default function CreatePage() {
         }
     };
 
+    // Get full share URL
+    const fullShareUrl = success && typeof window !== 'undefined'
+        ? `${window.location.origin}${success.shareUrl}`
+        : success?.shareUrl || '';
+
     const handleCopy = async () => {
         if (!success) return;
-        await navigator.clipboard.writeText(success.shareUrl);
+        await navigator.clipboard.writeText(fullShareUrl);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
@@ -190,13 +203,19 @@ export default function CreatePage() {
                     <div className={styles.linkBox}>
                         <input
                             type="text"
-                            value={success.shareUrl}
+                            value={fullShareUrl}
                             readOnly
                             className={styles.linkInput}
                         />
-                        <button onClick={handleCopy} className={styles.copyBtn}>
+                        <motion.button
+                            onClick={handleCopy}
+                            className={styles.copyBtn}
+                            whileTap={{ scale: 0.95 }}
+                            animate={copied ? { scale: [1, 1.1, 1] } : {}}
+                            transition={{ duration: 0.2 }}
+                        >
                             {copied ? '✓ Copied!' : 'Copy'}
-                        </button>
+                        </motion.button>
                     </div>
 
                     <div className={styles.notice}>
