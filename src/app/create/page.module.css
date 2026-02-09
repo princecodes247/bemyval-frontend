@@ -633,7 +633,7 @@
   color: var(--color-text-soft);
   line-height: 1.5;
   margin: 0;
-  max-height: 40px;
+  /* max-height: 40px; */
   overflow: hidden;
   text-overflow: ellipsis;
 }
