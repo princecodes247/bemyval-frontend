@@ -1,5 +1,5 @@
 // ============================================
-// Val4Me - Local Storage Utilities
+// BemyVal - Local Storage Utilities
 // ============================================
 
 const OWNER_TOKEN_KEY = 'bemyval_token';

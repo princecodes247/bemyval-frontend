@@ -1,6 +1,11 @@
 // ============================================
-// Val4Me - Constants & Presets
+// BemyVal - Constants & Presets
 // ============================================
+
+/**
+ * App name constant
+ */
+export const APP_NAME = 'BemyVal';
 
 /**
  * Message presets for valentine creation

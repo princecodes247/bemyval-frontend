@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FloatingHearts } from '@/components/FloatingHearts';
 import { getOwnerToken } from '@/lib/storage';
 import { api, type MyValentine } from '@/lib/api';
+import { APP_NAME } from '@/lib/constants';
 import styles from './page.module.css';
 
 export default function HomePage() {
@@ -62,7 +63,7 @@ export default function HomePage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.1 }}
                 >
-                    Val<span className={styles.highlight}>4</span>Me
+                    {APP_NAME}
                 </motion.h1>
 
                 <motion.p

@@ -103,7 +103,9 @@ export default function CreatePage() {
         setSelectedMood(mood);
         const presets = MESSAGE_PRESETS[mood];
         if (presets && presets.length > 0) {
-            setMessage(presets[0]);
+            // Pick a random message from the presets
+            const randomIndex = Math.floor(Math.random() * presets.length);
+            setMessage(presets[randomIndex]);
         }
     };
 
