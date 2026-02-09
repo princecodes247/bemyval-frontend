@@ -79,12 +79,13 @@ export default function ValentinePage({ params }: PageProps) {
 
             setViewState('yes');
         } catch (err: unknown) {
-            const apiError = err as { message?: string };
+            const apiError = err as { error?: string };
+            console.log({ err, apiError })
             // Handle already responded error specifically
-            if (apiError.message?.includes('Already responded')) {
+            if (apiError.error?.includes('Already responded')) {
                 setViewState('already_responded');
             } else {
-                setError(apiError.message || 'Something went wrong');
+                setError(apiError.error || 'Something went wrong');
             }
         }
     };
@@ -94,12 +95,12 @@ export default function ValentinePage({ params }: PageProps) {
             await api.submitResponse(id, { answer: 'thinking' });
             setViewState('thinking');
         } catch (err: unknown) {
-            const apiError = err as { message?: string };
+            const apiError = err as { error?: string };
             // Handle already responded error specifically
-            if (apiError.message?.includes('Already responded')) {
+            if (apiError.error?.includes('Already responded')) {
                 setViewState('already_responded');
             } else {
-                setError(apiError.message || 'Something went wrong');
+                setError(apiError.error || 'Something went wrong');
             }
         }
     };
@@ -165,12 +166,39 @@ export default function ValentinePage({ params }: PageProps) {
                 <FloatingHearts />
                 <motion.div
                     className={styles.respondedCard}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ type: 'spring', bounce: 0.4, duration: 0.6 }}
                 >
-                    <div className={styles.respondedIcon}>💝</div>
-                    <h2>Already Answered!</h2>
-                    <p>This valentine has already received a response 💕</p>
+                    <motion.div
+                        className={styles.respondedIcon}
+                        animate={{
+                            scale: [1, 1.2, 1],
+                            rotate: [0, 10, -10, 0]
+                        }}
+                        transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: 'easeInOut'
+                        }}
+                    >
+                        💝
+                    </motion.div>
+                    <h2>Love Already Found! 💕</h2>
+                    <p className={styles.respondedMessage}>
+                        This valentine has already been answered!<br />
+                        <span className={styles.respondedHint}>
+                            Looks like someone beat you to it... or maybe it was you? 😉
+                        </span>
+                    </p>
+                    <motion.div
+                        className={styles.respondedEmojis}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.5 }}
+                    >
+                        ✨ 💖 ✨
+                    </motion.div>
                 </motion.div>
             </main>
         );

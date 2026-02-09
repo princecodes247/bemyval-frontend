@@ -74,6 +74,23 @@
   line-height: 1.6;
 }
 
+.respondedMessage {
+  margin-bottom: 16px;
+}
+
+.respondedHint {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.875rem;
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
+.respondedEmojis {
+  font-size: 1.5rem;
+  margin-top: 8px;
+}
+
 /* Valentine Card */
 .valentineCard {
   position: relative;
